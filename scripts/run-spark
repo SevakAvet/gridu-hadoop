@@ -1,0 +1,10 @@
+spark-submit \
+  --class com.griddynamics.spark.Main \
+  --master local[*] \
+  --jars /tmp/mysql-connector-java-6.0.5.jar \
+  /tmp/spark-hadoop-lp_2.11-0.1.jar
+
+spark-submit \
+  --class com.griddynamics.spark.datasets.Main \
+  --master local[*] \
+  /tmp/spark.jar

@@ -1,0 +1,79 @@
+# Select top 10  most frequently purchased categories
+select category, count(category) as total from orders group by category order by total desc limit 10;
+
+# Select top 10 most frequently purchased product in each category
+select category, name, cnt from
+(
+    select category, name, cnt, row_number() over (partition by category order by cnt desc) as rn from
+    (
+        select category, name, count(*) as cnt from orders
+        group by category, name order by category, name, cnt desc
+    ) A
+) B where rn <= 10;
+
+# The same as above
+select category, name, total from
+(
+    select category, name, total, row_number() over (partition by category order by total desc) as rn from
+    (
+        select category, name, count(name) as total from
+        (
+            select category, name, rank() over (partition by category order by name) as rank from orders
+        ) A group by category, name, rank
+    ) B
+) C where rn <= 10;
+
+# Select top 10 countries with the highest money spending
+select distinct country_name, total_price from
+(
+    select l.country_name, sum(price) over (partition by l.country_name) as total_price
+    from orders e, blocks b, locations l
+    where e.ip = b.network and l.geoname_id = b.geoname_id
+) B order by total_price desc limit 10;
+
+# The same as above
+# 91 sec vs 116 sec with distinct (see query above)
+# SET hive.auto.convert.join=true;
+# SET mapreduce.job.reduces=1
+
+select country_name, total_price from
+(
+    select l.country_name, row_number() over (partition by l.country_name) as rn, sum(price) over (partition by l.country_name) as total_price
+    from orders e, blocks b, locations l
+    where e.ip = b.network and l.geoname_id = b.geoname_id
+) B where rn = 1 order by total_price desc limit 10;
+
+
+drop table select_1_table;
+CREATE TABLE select_1_table 
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n' AS
+select category, count(category) as total from orders group by category order by total desc limit 10;
+
+drop table select_2_table;
+CREATE TABLE select_2_table 
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n' AS
+select category, name, cnt from
+(
+    select category, name, cnt, row_number() over (partition by category order by cnt desc) as rn from
+    (
+        select category, name, count(*) as cnt from orders
+        group by category, name order by category, name, cnt desc
+    ) A
+) B where rn <= 10;
+
+
+drop table select_3_table;
+CREATE TABLE select_3_table 
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n' AS
+select country_name, total_price from
+(
+    select  /*+ MAPJOIN(orders) */ l.country_name, row_number() over (partition by l.country_name) as rn, sum(price) over (partition by l.country_name) as total_price
+    from orders e, blocks b, locations l
+    where e.ip = b.network and l.geoname_id = b.geoname_id
+) B where rn = 1 order by total_price desc limit 10;

@@ -1,0 +1,51 @@
+CREATE EXTERNAL TABLE orders (
+  old_date String,
+  time String,
+  name String,
+  price Double,
+  category String,
+  ip String
+)
+PARTITIONED BY (date Date)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/savetisyan/events/';
+
+
+CREATE EXTERNAL TABLE blocks (
+  network STRING,
+  geoname_id INT,
+  registered_country_geoname_id INT,
+  represented_country_geoname_id INT,
+  is_anonymous_proxy TINYINT,
+  is_satellite_provider TINYINT,
+  postal_code INT,
+  latitude  FLOAT,
+  longitude FLOAT,
+  accuracy_radius FLOAT
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/savetisyan/geolite/blocks'
+TBLPROPERTIES("skip.header.line.count"="1");
+
+CREATE EXTERNAL TABLE locations (
+    geoname_id INT,
+    locale_code STRING,
+    continent_code STRING,
+    continent_name STRING,
+    country_iso_code STRING,
+    country_name STRING,
+    subdivision_1_iso_code STRING,
+    subdivision_1_name STRING,
+    subdivision_2_iso_code STRING,
+    subdivision_2_name STRING,
+    city_name STRING,
+    metro_code STRING, 
+    time_zone STRING
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/savetisyan/geolite/locations'
+TBLPROPERTIES("skip.header.line.count"="1");
+

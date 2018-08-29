@@ -1,0 +1,3 @@
+nohup flume-ng agent -n sevak-agent -c conf -f conf/flume.conf -Dflume.root.logger=DEBUG,console &
+
+nohup flume-ng agent -n spark-agent -c conf -f conf/flume-spark.conf -Dflume.root.logger=DEBUG,console &

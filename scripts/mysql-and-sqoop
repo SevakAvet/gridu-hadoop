@@ -1,0 +1,7 @@
+create table select_1_table (name char(50), count integer);
+create table select_2_table (category char(50), name char(50), count integer);
+create table select_3_table (category char(50), price float);
+
+sqoop export --connect jdbc:mysql://localhost/hive_export --username root --password cloudera --table select_1_table --export-dir /user/hive/warehouse/select_1_table -m 1
+sqoop export --connect jdbc:mysql://localhost/hive_export --username root --password cloudera --table select_2_table --export-dir /user/hive/warehouse/select_2_table -m 1
+sqoop export --connect jdbc:mysql://localhost/hive_export --username root --password cloudera --table select_3_table --export-dir /user/hive/warehouse/select_3_table -m 1

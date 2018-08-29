@@ -1,0 +1,1 @@
+docker run -d -p 7180:7180 -p 10001:10001 -p 80:80 --name cloudera --hostname=quickstart.cloudera --privileged=true -ti cloudera/quickstart:latest /usr/bin/docker-quickstart
